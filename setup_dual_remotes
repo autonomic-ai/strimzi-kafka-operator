@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+
+# This scripts sets up the upstream github project as a second "remote" repo.
+# We do this so that we can keep up with changes in that repo.
+
+UPSTREAM_REMOTE_NAME='upstream'
+UPSTREAM_REPO='https://github.com/strimzi/strimzi-kafka-operator.git'
+
+if [[ -n $(git config remote.${UPSTREAM_REMOTE_NAME}.url) ]] ; then
+  echo "Already setup with $UPSTREAM_REMOTE_NAME as a remote." >&2
+  exit 0
+fi
+
+# Add the public upstream repo as a new remote
+git remote add $UPSTREAM_REMOTE_NAME $UPSTREAM_REPO
+
+# Fetch (not pull) from upstream
+git fetch $UPSTREAM_REMOTE_NAME
+
+# Create a specially-named master to differentiate it from our own.
+git checkout -b ${UPSTREAM_REMOTE_NAME}-master ${UPSTREAM_REMOTE_NAME}/master
